@@ -209,8 +209,177 @@
             margin-top: 2rem;
             animation: fadeInUp 1s ease-out 0.5s both;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             padding: 0 1rem;
+        }
+
+        /* ===== AI Level Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: rgba(30, 32, 50, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            width: min(90vw, 380px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+            position: relative;
+        }
+
+        .light-mode .modal-card {
+            background: rgba(240, 242, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-overlay.open .modal-card {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 0.8rem;
+            inset-inline-end: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .modal-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .level-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .level-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .level-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .level-btn:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .level-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .level-info {
+            flex: 1;
+        }
+
+        .level-name {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .level-desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.1rem;
+        }
+
+        .level-stars {
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .level-easy {
+            background: linear-gradient(135deg, #1a7a3a, #2dc653);
+            color: white;
+        }
+
+        .level-medium {
+            background: linear-gradient(135deg, #a07000, #f9c74f);
+            color: #1a1000;
+        }
+
+        .level-hard {
+            background: linear-gradient(135deg, #b84300, #f77f00);
+            color: white;
+        }
+
+        .level-expert {
+            background: linear-gradient(135deg, #8338ec, #ff006e);
+            color: white;
         }
 
         @keyframes fadeInUp {
@@ -241,7 +410,6 @@
             position: relative;
             overflow: hidden;
             text-decoration: none;
-            flex: 1;
             min-width: 200px;
             max-width: 250px;
         }
@@ -388,12 +556,54 @@
             <a href="start.html" class="btn btn-primary" id="friend-btn">
                 <i class="fas fa-user-friends"></i> <span id="friend-text">اللعب ضد صديق</span>
             </a>
-            <a href="starting_against_ai.html" class="btn btn-secondary" id="ai-btn">
+            <button class="btn btn-secondary" id="ai-btn" onclick="openModal()">
                 <i class="fas fa-robot"></i> <span id="ai-text">اللعب ضد الذكاء الاصطناعي</span>
-            </a>
+            </button>
             <a href="settings.html" class="btn btn-light" id="settings-btn">
                 <i class="fas fa-cog"></i> <span id="settings-text">الإعدادات</span>
             </a>
+        </div>
+
+        <!-- AI Difficulty Modal -->
+        <div class="modal-overlay" id="ai-modal" onclick="handleOverlayClick(event)">
+            <div class="modal-card">
+                <button class="modal-close" onclick="closeModal()" aria-label="close">✕</button>
+                <p class="modal-title" id="modal-title">اختر مستوى الصعوبة</p>
+                <div class="modal-levels">
+                    <a href="starting_against_ai_easy.html" class="level-btn level-easy">
+                        <div class="level-icon"><i class="fas fa-leaf"></i></div>
+                        <div class="level-info">
+                            <div class="level-name" id="easy-text">سهل</div>
+                            <div class="level-desc" id="easy-desc">حركات عشوائية</div>
+                        </div>
+                        <span class="level-stars" id="easy-stars">★☆☆☆</span>
+                    </a>
+                    <a href="starting_against_ai_mid.html" class="level-btn level-medium">
+                        <div class="level-icon"><i class="fas fa-brain"></i></div>
+                        <div class="level-info">
+                            <div class="level-name" id="mid-text">متوسط</div>
+                            <div class="level-desc" id="mid-desc">يخطئ أحياناً</div>
+                        </div>
+                        <span class="level-stars" id="mid-stars">★★☆☆</span>
+                    </a>
+                    <a href="starting_against_ai_hard.html" class="level-btn level-hard">
+                        <div class="level-icon"><i class="fas fa-fire"></i></div>
+                        <div class="level-info">
+                            <div class="level-name" id="hard-text">صعب</div>
+                            <div class="level-desc" id="hard-desc">ذكي جداً</div>
+                        </div>
+                        <span class="level-stars" id="hard-stars">★★★☆</span>
+                    </a>
+                    <a href="starting_against_ai_expert.html" class="level-btn level-expert">
+                        <div class="level-icon"><i class="fas fa-skull"></i></div>
+                        <div class="level-info">
+                            <div class="level-name" id="expert-text">خبير</div>
+                            <div class="level-desc" id="expert-desc">لا يُهزم أبداً!</div>
+                        </div>
+                        <span class="level-stars" id="expert-stars">★★★★</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -449,6 +659,23 @@
             loadSettings();
         });
 
+        // Modal control
+        function openModal() {
+            document.getElementById('ai-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('ai-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target === document.getElementById('ai-modal')) closeModal();
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
         // Load and apply settings
         function loadSettings() {
             // Dark Mode
@@ -474,24 +701,43 @@
                     subtitle: "لعبة الاستراتيجية الكلاسيكية التي لا تشيخ. تحدى صديقك أو اختبر مهاراتك ضد الذكاء الاصطناعي.",
                     friend: "اللعب ضد صديق",
                     ai: "اللعب ضد الذكاء الاصطناعي",
-                    settings: "الإعدادات"
+                    settings: "الإعدادات",
+                    modalTitle: "اختر مستوى الصعوبة",
+                    easy: "سهل", easyDesc: "حركات عشوائية",
+                    mid: "متوسط", midDesc: "يخطئ أحياناً",
+                    hard: "صعب", hardDesc: "ذكي جداً",
+                    expert: "خبير", expertDesc: "لا يُهزم أبداً!"
                 },
                 en: {
                     title: "Tic-Tac-Toe",
                     subtitle: "The classic strategy game that never gets old. Challenge a friend or test your skills against AI.",
                     friend: "Play vs Friend",
                     ai: "Play vs AI",
-                    settings: "Settings"
+                    settings: "Settings",
+                    modalTitle: "Choose Difficulty",
+                    easy: "Easy", easyDesc: "Random moves",
+                    mid: "Medium", midDesc: "Makes mistakes",
+                    hard: "Hard", hardDesc: "Very smart",
+                    expert: "Expert", expertDesc: "Unbeatable!"
                 }
             };
 
-            const currentTexts = texts[lang] || texts['ar'];
+            const t = texts[lang] || texts['ar'];
 
-            document.getElementById('main-title').textContent = currentTexts.title;
-            document.getElementById('subtitle-text').textContent = currentTexts.subtitle;
-            document.getElementById('friend-text').textContent = currentTexts.friend;
-            document.getElementById('ai-text').textContent = currentTexts.ai;
-            document.getElementById('settings-text').textContent = currentTexts.settings;
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('subtitle-text').textContent = t.subtitle;
+            document.getElementById('friend-text').textContent = t.friend;
+            document.getElementById('ai-text').textContent = t.ai;
+            document.getElementById('settings-text').textContent = t.settings;
+            document.getElementById('modal-title').textContent = t.modalTitle;
+            document.getElementById('easy-text').textContent = t.easy;
+            document.getElementById('easy-desc').textContent = t.easyDesc;
+            document.getElementById('mid-text').textContent = t.mid;
+            document.getElementById('mid-desc').textContent = t.midDesc;
+            document.getElementById('hard-text').textContent = t.hard;
+            document.getElementById('hard-desc').textContent = t.hardDesc;
+            document.getElementById('expert-text').textContent = t.expert;
+            document.getElementById('expert-desc').textContent = t.expertDesc;
         }
     </script>
 </body>
